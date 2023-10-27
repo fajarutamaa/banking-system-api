@@ -2,11 +2,6 @@ const { ResponseFormatter } = require('../helper/resp.helper')
 const { PrismaClient } = require('@prisma/client')
 const prisma = new PrismaClient()
 
-function TestUser(req, res) {
-    let resp = ResponseFormatter(null, 'success', null, 200)
-    res.json(resp)
-    return
-}
 
 async function Insert(req, res) {
 
@@ -15,7 +10,6 @@ async function Insert(req, res) {
     const payload = {
         name,
         password,
-
     }
 
     try {
@@ -33,11 +27,60 @@ async function Insert(req, res) {
     }
 }
 
-async function Get(res, req) {
+async function GetById(req, res) {
 
-    const { name, password } = req.query
+    const { id } = req.params
+
+    try {
+        let users = await prisma.user.findUnique({
+            where: {
+                id: Number(id)
+            },
+        })
+        let respons = ResponseFormatter(users, 'success', null, 200)
+        res.json(respons)
+        return
+    } catch (error) {
+        let respons = ResponseFormatter(null, 'internal server error', error, 500)
+        res.json(respons)
+        return
+    }
+}
+
+async function Delete(req, res) {
+
+    const { id } = req.params
+
+    try {
+        let users = await prisma.user.delete({
+            where: {
+                id: Number(id)
+            },
+        })
+        let respons = ResponseFormatter(users, 'success', null, 200)
+        res.json(respons)
+        return
+    } catch (error) {
+        let respons = ResponseFormatter(null, 'internal server error', error, 500)
+        res.json(respons)
+        return
+    }
+
+}
+
+async function Update(req, res) {
+
+    const { name, password } = req.body
+    const { id } = req.params
 
     const payload = {}
+
+
+    if (!name && !password) {
+        let resp = ResponseFormatter(null, 'bad request', null, 400)
+        res.json(resp)
+        return
+    }
 
     if (name) {
         payload.name = name
@@ -48,29 +91,25 @@ async function Get(res, req) {
     }
 
     try {
-        const users = await prisma.user.findMany({
-            where: payload,
-            include: {
-                post: {
-                    where: {
-                        address: address
-                    }
-                }
-            }
+        const user = await prisma.user.update({
+            where: {
+                id: Number(id)
+            },
+            data: payload
         })
-        let resp = ResponseFormatter(users, 'success', null, 200)
-        res.json(resp)
+        let respons = ResponseFormatter(user, 'success', null, 200)
+        res.json(respons)
         return
     } catch (error) {
-        let resp = ResponseFormatter(null, 'internal server error', error, 500)
-        res.json(resp)
+        let respons = ResponseFormatter(null, 'internal server error', error, 500)
+        res.json(respons)
         return
     }
 }
 
-
 module.exports = {
-    TestUser,
     Insert,
-    Get
+    GetById,
+    Delete,
+    Update
 }

@@ -11,49 +11,50 @@ datasource db {
 }
 
 model User {
-  id        Int       @id @default(autoincrement())
-  name      String    @unique
-  password  String    @unique
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-  // bankAccounts BankAccount[]
-  // profiles     Profile[]
+  id           Int           @id @default(autoincrement())
+  name         String        @unique
+  email        String        @unique
+  password     String        @unique
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  deletedAt    DateTime?
+  bankAccounts BankAccount[]
+  profile      Profile[]
 }
 
-// model BankAccount {
-//   id                      Int           @id @default(autoincrement())
-//   user_id                 Int
-//   bank_name               String
-//   bank_account_number     Int
-//   balance                 Decimal
-//   createdAt               DateTime      @default(now())
-//   updatedAt               DateTime      @updatedAt
-//   deletedAt               DateTime?
-//   user                    User          @relation(fields: [user_id], references: [id])
-//   Transaction             Transaction[]
-// }
+model Profile {
+  id              Int       @id @default(autoincrement())
+  user_id         Int       @unique
+  identity_type   String
+  identity_number Int
+  address         String
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  deletedAt       DateTime?
+  user            User      @relation(fields: [user_id], references: [id])
+}
 
-// model Profile {
-//   id              Int       @id @default(autoincrement())
-//   user_id         Int
-//   identity_type   String
-//   identity_number Int
-//   address         String
-//   createdAt       DateTime  @default(now())
-//   updatedAt       DateTime  @updatedAt
-//   deletedAt       DateTime?
-//   user            User      @relation(fields: [user_id], references: [id])
-// }
+model BankAccount {
+  id                      Int           @id @default(autoincrement())
+  user_id                 Int
+  bank_name               String
+  bank_account_number     Int
+  balance                 Decimal?
+  createdAt               DateTime      @default(now())
+  updatedAt               DateTime      @updatedAt
+  deletedAt               DateTime?
+  user                    User          @relation(fields: [user_id], references: [id])
+  Transaction             Transaction[]
+}
 
-// model Transaction {
-//   id                     Int          @id @default(autoincrement())
-//   source_account_id      Int
-//   destination_account_id Int
-//   amount                 Decimal
-//   createdAt              DateTime     @default(now())
-//   updatedAt              DateTime     @updatedAt
-//   deletedAt              DateTime?
-//   BankAccount            BankAccount? @relation(fields: [bankAccountId], references: [id])
-//   bankAccountId          Int?
-// }
+model Transaction {
+  id                     Int          @id @default(autoincrement())
+  source_account_id      Int
+  destination_account_id Int
+  amount                 Decimal
+  createdAt              DateTime     @default(now())
+  updatedAt              DateTime     @updatedAt
+  deletedAt              DateTime?
+  BankAccount            BankAccount? @relation(fields: [bankAccountId], references: [id])
+  bankAccountId          Int?
+}

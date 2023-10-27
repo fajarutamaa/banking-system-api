@@ -2,6 +2,9 @@
 Clone the project from GitHub repository :
 
       git clone https://github.com/fajarutamaa/backend-challenge-4.git
+      
+change directory :
+
       cd backend-challenge-4
 
 Install all package dependencies :

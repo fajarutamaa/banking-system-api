@@ -70,6 +70,9 @@ async function GetAll(req, res) {
     try {
         const users = await prisma.user.findMany({
             where: payload,
+            orderBy: {
+                id: 'asc'
+            }
         })
 
         let respons = ResponseFormatter(users, 'success', null, 200)

@@ -63,10 +63,32 @@ function CheckAccount(req, res, next) {
     next()
 }
 
+function CheckTransaction(req, res, next) {
+    const schema = Joi.object({
+        source_account_id: Joi.number().integer().positive().required(),
+        destination_account_id:  Joi.number().integer().positive().required(),
+        amount: Joi.number().integer().positive().required()
+    })
+
+    const { error } = schema.validate(req.body)
+    if (error) {
+        let respons = ResponseFormatter(
+            null,
+            'invalid request',
+            error.details[0].message,
+            400)
+        res.json(respons)
+        return
+    }
+    next()
+}
+
 
 
 module.exports = {
     CheckProcess,
     CheckProfile,
-    CheckAccount
+    CheckAccount,
+    CheckTransaction
 }
+

@@ -15,6 +15,19 @@ Compile and hot-reload for development :
 
       npm run dev
 
+## Environment Variables Settings
+
+There is a required environment variable that needs to be set in `.env`
+submit:
+
+- PORT
+  
+  Port address to provide access to localhost for development purposes. You can assign a port address according to the        available port, such as 8000, 8080 or etc.
+  
+- DATABASE_URL
+  
+  Database URL credentials to provide access to the Database. You can contact the administrator to get the adrress url.
+
 ## Tech Stack
 - [x] Express Js
 - [x] Prisma

@@ -63,13 +63,34 @@ async function GetAll(req, res) {
         res.json(respons)
         return
     }
-
 }
 
+async function GetById (req, res){
+
+    const { source_account_id } = req.params
+
+    try{
+
+        const transactions = await prisma.transaction.findMany({
+            where:{
+                id : source_account_id
+            }
+        })
+
+        let respons = ResponseFormatter(transactions, 'success', null, 200)
+        res.json(respons)
+        return
+    } catch(error){
+        let respons = ResponseFormatter(null, 'internal server error', error, 500)
+        res.json(respons)
+        return
+    }
+}
 
 
 
 module.exports = {
     Insert,
-    GetAll
+    GetAll,
+    GetById
 }

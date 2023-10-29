@@ -31,7 +31,7 @@ submit:
 ## Tech Stack
 - [x] Express Js
 - [x] Prisma
-- [x] PostgresSQl 16
+- [x] PostgresSQL 16
 - [x] PgAdmin V7
 - [x] Postman
 - [x] Visual Studio Code

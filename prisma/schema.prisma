@@ -14,19 +14,19 @@ model User {
   id           Int           @id @default(autoincrement())
   name         String        @unique
   email        String        @unique
-  password     String        @unique
+  password     String
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
   deletedAt    DateTime?
   bankAccounts BankAccount[]
-  profile      Profile[]
+  profile      Profile?
 }
 
 model Profile {
   id              Int       @id @default(autoincrement())
   user_id         Int       @unique
   identity_type   String
-  identity_number Int
+  identity_number Int       @unique
   address         String
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
@@ -35,26 +35,27 @@ model Profile {
 }
 
 model BankAccount {
-  id                      Int           @id @default(autoincrement())
-  user_id                 Int
-  bank_name               String
-  bank_account_number     Int
-  balance                 Decimal?
-  createdAt               DateTime      @default(now())
-  updatedAt               DateTime      @updatedAt
-  deletedAt               DateTime?
-  user                    User          @relation(fields: [user_id], references: [id])
-  Transaction             Transaction[]
+  id                       Int           @id @default(autoincrement())
+  user_id                  Int           @unique
+  bank_name                String
+  bank_account_number      Int
+  balance                  Int           @default(0)
+  createdAt                DateTime      @default(now())
+  updatedAt                DateTime      @updatedAt
+  deletedAt                DateTime?
+  user                     User          @relation(fields: [user_id], references: [id])
+  transactions_source      Transaction[] @relation("sourceAccount")
+  transactions_destination Transaction[] @relation("destinationAccount")
 }
 
 model Transaction {
-  id                     Int          @id @default(autoincrement())
+  id                     Int         @id @default(autoincrement())
   source_account_id      Int
   destination_account_id Int
-  amount                 Decimal
-  createdAt              DateTime     @default(now())
-  updatedAt              DateTime     @updatedAt
+  amount                 Int
+  createdAt              DateTime    @default(now())
+  updatedAt              DateTime    @updatedAt
   deletedAt              DateTime?
-  BankAccount            BankAccount? @relation(fields: [bankAccountId], references: [id])
-  bankAccountId          Int?
+  sourceAccount          BankAccount @relation("sourceAccount", fields: [source_account_id], references: [user_id])
+  destinationAccount     BankAccount @relation("destinationAccount", fields: [destination_account_id], references: [user_id])
 }

@@ -6,7 +6,6 @@ const prisma = new PrismaClient()
 async function Insert(req, res) {
 
     const { source_account_id, destination_account_id, amount } = req.body
-    console.log(req.body)
 
     const payload = {
         source_account_id: parseInt(source_account_id),
@@ -17,6 +16,21 @@ async function Insert(req, res) {
     try {
         const transaction = await prisma.transaction.create({
             data: payload,
+        })
+
+        const sourceAccount = await prisma.bankAccount.findUnique({
+            where: {
+                id: Number(destination_account_id),
+            }
+        })
+
+        const updateBalance = await prisma.bankAccount.update({
+            where: {
+                id: Number(destination_account_id)
+            },
+            data: {
+                balance: Number(sourceAccount.balance) + Number(payload.amount),
+            },
         })
 
         let respons = ResponseFormatter(transaction, 'success', null, 200)
@@ -65,22 +79,22 @@ async function GetAll(req, res) {
     }
 }
 
-async function GetById (req, res){
+async function GetById(req, res) {
 
     const { source_account_id } = req.params
 
-    try{
+    try {
 
         const transactions = await prisma.transaction.findMany({
-            where:{
-                id : source_account_id
+            where: {
+                id: source_account_id
             }
         })
 
         let respons = ResponseFormatter(transactions, 'success', null, 200)
         res.json(respons)
         return
-    } catch(error){
+    } catch (error) {
         let respons = ResponseFormatter(null, 'internal server error', error, 500)
         res.json(respons)
         return

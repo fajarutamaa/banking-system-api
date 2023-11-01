@@ -20,16 +20,16 @@ async function Insert(req, res) {
 
         const sourceAccount = await prisma.bankAccount.findUnique({
             where: {
-                id: Number(destination_account_id),
+                id: parseInt(destination_account_id),
             }
         })
 
         const updateBalance = await prisma.bankAccount.update({
             where: {
-                id: Number(destination_account_id)
+                id: parseInt(destination_account_id)
             },
             data: {
-                balance: Number(sourceAccount.balance) + Number(payload.amount),
+                balance: parseInt(sourceAccount.balance) + parseInt(payload.amount),
             },
         })
 

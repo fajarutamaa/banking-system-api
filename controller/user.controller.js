@@ -23,7 +23,6 @@ async function Insert(req, res) {
                 }
 
             }
-
         })
         let respons = ResponseFormatter(user, 'created user success', null, 200)
         return res.json(respons)
@@ -129,13 +128,13 @@ async function Delete(req, res) {
 
 async function Update(req, res) {
 
-    const { name, password, email, identity_type, identity_number, address } = req.body
+    const { name, password, email } = req.body
     const { id } = req.params
 
     const payload = {}
 
 
-    if (!name && !password && !email && !identity_type && !identity_number && !address) {
+    if (!name && !password && !email ) {
         let resp = ResponseFormatter(null, 'bad request', null, 400)
         res.json(resp)
         return

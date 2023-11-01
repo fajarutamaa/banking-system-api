@@ -3,7 +3,7 @@ const swaggerJSDoc = require('swagger-jsdoc')
 const app = express()
 const router = require('./routes/route')
 const swaggerUI = require('swagger-ui-express')
-const swaggerDefinition = require('./helper/swagger.define')
+const { swaggerDefinition } = require('./helper/swagger.define')
 
 require('dotenv').config()
 

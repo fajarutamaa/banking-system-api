@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const { Insert, GetById, Delete, Update, GetAll } = require('../controller/user.controller')
-const { CheckProcess } = require('../middleware/middleware')
+const { CheckUser } = require('../middleware/middleware')
 
 
 /**
@@ -31,7 +31,7 @@ const { CheckProcess } = require('../middleware/middleware')
  *       500:
  *         description: Internal server error
  */
-router.post('/', CheckProcess, Insert)
+router.post('/', CheckUser, Insert)
 
 /**
  * @swagger

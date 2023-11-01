@@ -19,7 +19,7 @@ async function Insert(req, res) {
             data: payload,
         })
 
-        let respons = ResponseFormatter(account, 'success', null, 200)
+        let respons = ResponseFormatter(account, 'create account is success', null, 200)
         res.json(respons)
         return
     } catch (error) {
@@ -55,7 +55,7 @@ async function GetAll(req, res) {
             }
         })
 
-        let respons = ResponseFormatter(accounts, 'success', null, 200)
+        let respons = ResponseFormatter(accounts, 'fetch all account is success', null, 200)
         res.json(respons)
         return
     } catch (error) {
@@ -77,7 +77,7 @@ async function GetById(req, res) {
             }
         })
 
-        let respons = ResponseFormatter(accounts, 'success', null, 200)
+        let respons = ResponseFormatter(accounts, 'fetch account by id is success', null, 200)
         res.json(respons)
         return
     } catch(error){

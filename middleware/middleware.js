@@ -1,7 +1,7 @@
 const { ResponseFormatter } = require('../helper/resp.helper')
 const Joi = require('joi')
 
-function CheckProcess(req, res, next) {
+function CheckUser(req, res, next) {
     const schema = Joi.object({
         name: Joi.string().max(255).required(),
         email: Joi.string().email().required(),
@@ -68,7 +68,7 @@ function CheckTransaction(req, res, next) {
 
 
 module.exports = {
-    CheckProcess,
+    CheckUser,
     CheckAccount,
     CheckTransaction
 }

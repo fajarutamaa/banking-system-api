@@ -14,28 +14,44 @@ async function Insert(req, res) {
     }
 
     try {
-        const transaction = await prisma.transaction.create({
-            data: payload,
-        })
 
         const sourceAccount = await prisma.bankAccount.findUnique({
             where: {
-                id: parseInt(destination_account_id),
+                id: parseInt(source_account_id),
             }
         })
 
-        const updateBalance = await prisma.bankAccount.update({
+        const destinationAccount = await prisma.bankAccount.findUnique({
             where: {
-                id: parseInt(destination_account_id)
-            },
-            data: {
-                balance: parseInt(sourceAccount.balance) + parseInt(payload.amount),
-            },
-        })
+                id: parseInt(destination_account_id),
+            }
+        })     
 
-        let respons = ResponseFormatter(transaction, 'success', null, 200)
-        res.json(respons)
-        return
+        if (sourceAccount && destinationAccount) {
+
+            const transaction = await prisma.transaction.create({
+                data: payload,
+            })
+
+            const updateBalance = await prisma.bankAccount.update({
+                where: {
+                    id: parseInt(destination_account_id)
+                },
+                data: {
+                    balance: parseInt(destinationAccount.balance) + parseInt(payload.amount),
+                },
+            })
+
+            let respons = ResponseFormatter(transaction, 'transaction success', null, 200)
+            res.json(respons)
+            return
+
+        } else {
+            let respons = ResponseFormatter(null, 'id account not found', null, 404)
+            res.json(respons)
+            return
+        }
+
     } catch (error) {
         let respons = ResponseFormatter(null, 'internal server error', error, 500)
         res.json(respons)
@@ -69,7 +85,7 @@ async function GetAll(req, res) {
             }
         })
 
-        let respons = ResponseFormatter(transactions, 'success', null, 200)
+        let respons = ResponseFormatter(transactions, 'fetch all history transaction is success', null, 200)
         res.json(respons)
         return
     } catch (error) {
@@ -91,7 +107,7 @@ async function GetById(req, res) {
             }
         })
 
-        let respons = ResponseFormatter(transactions, 'success', null, 200)
+        let respons = ResponseFormatter(transactions, 'fetch all history transaction by source account id is success', null, 200)
         res.json(respons)
         return
     } catch (error) {

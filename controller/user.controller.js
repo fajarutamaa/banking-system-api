@@ -1,4 +1,4 @@
-const { ResponseFormatter } = require('../helper/resp.helper')
+const { ResponseFormatter, Pagination } = require('../helper/resp.helper')
 const { PrismaClient } = require('@prisma/client')
 
 const prisma = new PrismaClient()
@@ -71,7 +71,7 @@ async function GetById(req, res) {
 
 async function GetAll(req, res) {
 
-    const { name, password, email } = req.query
+    const { name, password, email, page, perPage } = req.query
 
     const payload = {}
 
@@ -88,17 +88,30 @@ async function GetAll(req, res) {
     }
 
     try {
+        const totalCount = await prisma.user.count({
+            where: payload,
+        })
+
+        const currentPage = parseInt(page) || 1
+        const itemsPerPage = parseInt(perPage) || 10
+
         const users = await prisma.user.findMany({
             where: payload,
             orderBy: {
                 id: 'asc'
-            }
+            },
+            skip: (currentPage - 1) * itemsPerPage,
+            take: itemsPerPage,
         })
 
+        const totalPages = Math.ceil(totalCount / itemsPerPage)
+
+        let pagination = Pagination(currentPage, totalCount, totalPages)
         let respons = ResponseFormatter(users, 'fetch all user success', null, 200)
-        res.json(respons)
+        res.json({ data: respons, pagination })
         return
     } catch (error) {
+        console.log(error)
         let respons = ResponseFormatter(null, 'internal server error', error, 500)
         res.json(respons)
         return
@@ -110,15 +123,17 @@ async function Delete(req, res) {
     const { id } = req.params
 
     try {
-        let users = await prisma.user.delete({
+        const users = await prisma.user.delete({
             where: {
-                id:parseInt(id)
-            },
+                id: parseInt(id),
+            }
         })
+
         let respons = ResponseFormatter(users, 'delete user success', null, 200)
         res.json(respons)
         return
     } catch (error) {
+        console.log(error)
         let respons = ResponseFormatter(null, 'internal server error', error, 500)
         res.json(respons)
         return
@@ -134,7 +149,7 @@ async function Update(req, res) {
     const payload = {}
 
 
-    if (!name && !password && !email ) {
+    if (!name && !password && !email) {
         let resp = ResponseFormatter(null, 'bad request', null, 400)
         res.json(resp)
         return

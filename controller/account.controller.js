@@ -1,4 +1,4 @@
-const { ResponseFormatter } = require('../helper/resp.helper')
+const { ResponseFormatter, Pagination } = require('../helper/resp.helper')
 const { PrismaClient } = require('@prisma/client')
 
 const prisma = new PrismaClient()
@@ -31,7 +31,7 @@ async function Insert(req, res) {
 
 async function GetAll(req, res) {
 
-    const { user_id, bank_name, bank_account_number } = req.query
+    const { user_id, bank_name, bank_account_number, page, perPage } = req.query
 
     const payload = {}
 
@@ -48,15 +48,28 @@ async function GetAll(req, res) {
     }
 
     try {
+
+        const totalCount = await prisma.bankAccount.count({
+            where: payload,
+        })
+
+        const currentPage = parseInt(page) || 1
+        const itemsPerPage = parseInt(perPage) || 10
+
         const accounts = await prisma.bankAccount.findMany({
             where: payload,
             orderBy: {
                 id: 'asc'
-            }
+            },
+            skip: (currentPage - 1) * itemsPerPage,
+            take: itemsPerPage,
         })
 
+        const totalPages = Math.ceil(totalCount / itemsPerPage)
+
+        let pagination = Pagination(currentPage, totalCount, totalPages)
         let respons = ResponseFormatter(accounts, 'fetch all account is success', null, 200)
-        res.json(respons)
+        res.json({ data: respons, pagination })
         return
     } catch (error) {
         let respons = ResponseFormatter(null, 'internal server error', error, 500)
@@ -80,7 +93,7 @@ async function GetById(req, res) {
         let respons = ResponseFormatter(accounts, 'fetch account by id is success', null, 200)
         res.json(respons)
         return
-    } catch(error){
+    } catch (error) {
         console.log(error)
         let respons = ResponseFormatter(null, 'internal server error', error, 500)
         res.json(respons)

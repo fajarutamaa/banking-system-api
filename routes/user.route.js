@@ -3,6 +3,34 @@ const router = express.Router()
 const { Insert, GetById, Delete, Update, GetAll } = require('../controller/user.controller')
 const { CheckProcess } = require('../middleware/middleware')
 
+
+/**
+ * @swagger
+ * /API/v1/user:
+ *   post:
+ *     tags:
+ *       - "user"
+ *     summary: Example to create a user 
+ *     parameters:
+ *       - in: body
+ *         name: user
+ *         required: true
+ *         description: The user data
+ *         schema:
+ *           type: object
+ *           properties:
+ *             name:
+ *               type: string
+ *             email:
+ *               type: string
+ *             password:
+ *               type: string
+ *     responses:
+ *       200:
+ *         description: Success
+ *       500:
+ *         description: Internal server error
+ */
 router.post('/', CheckProcess, Insert)
 
 /**

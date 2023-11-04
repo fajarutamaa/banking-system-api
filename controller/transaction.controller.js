@@ -35,20 +35,20 @@ async function Insert(req, res) {
 
             const updateBalance = await prisma.bankAccount.update({
                 where: {
-                    id: parseInt(destination_account_id)
+                    id: parseInt(destination_account_id),
                 },
                 data: {
-                    balance: parseInt(destinationAccount.balance) + parseInt(payload.amount),
+                    balance: destinationAccount.balance + payload.amount,
                 },
             })
-
+            console.log(updateBalance)
             let respons = ResponseFormatter(transaction, 'transaction success', null, 200)
-            res.status(200).json(respons)
+            res.json(respons)
             return
 
         } else {
             let respons = ResponseFormatter(null, 'id account not found', null, 404)
-            res.status(404).json(respons)
+            res.json(respons)
             return
         }
 
@@ -99,12 +99,12 @@ async function GetAll(req, res) {
 
         let pagination = Pagination(currentPage, totalCount, totalPages)
         let respons = ResponseFormatter(transactions, 'fetch all history transaction is success', null, 200)
-        res.status(200).json({ data: respons, pagination })
+        res.json({ data: respons, pagination })
         return
     } catch (error) {
         console.log(error)
         let respons = ResponseFormatter(null, 'internal server error', error, 500)
-        res.status(500).json(respons)
+        res.json(respons)
         return
     }
 }
@@ -122,11 +122,11 @@ async function GetById(req, res) {
         })
 
         let respons = ResponseFormatter(transactions, 'fetch all history transaction by source account id is success', null, 200)
-        res.status(200).json(respons)
+        res.json(respons)
         return
     } catch (error) {
         let respons = ResponseFormatter(null, 'internal server error', error, 500)
-        res.status(500).json(respons)
+        res.json(respons)
         return
     }
 }

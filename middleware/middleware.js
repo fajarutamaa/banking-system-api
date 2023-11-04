@@ -18,6 +18,7 @@ function CheckUser(req, res, next) {
             'invalid request',
             error.details[0].message,
             400)
+        res.status(400)
         res.json(respons)
         return
     }
@@ -39,6 +40,7 @@ function CheckAccount(req, res, next) {
             'invalid request',
             error.details[0].message,
             400)
+        res.status(400)
         res.json(respons)
         return
     }
@@ -59,6 +61,7 @@ function CheckTransaction(req, res, next) {
             'invalid request',
             error.details[0].message,
             400)
+        res.status(400)
         res.json(respons)
         return
     }

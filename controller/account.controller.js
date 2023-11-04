@@ -7,20 +7,35 @@ async function Insert(req, res) {
 
     const { user_id, bank_name, bank_account_number } = req.body
 
+    const { id } = req.params
+
     const payload = {
         user_id: parseInt(user_id),
         bank_name,
         bank_account_number: parseInt(bank_account_number),
     }
 
+
     try {
-        const account = await prisma.bankAccount.create({
-            data: payload,
+        const checkUser = await prisma.user.findUnique({
+            where: {
+               id : parseInt(user_id),
+            }
         })
 
-        let respons = ResponseFormatter(account, 'create account is success', null, 200)
-        res.status(200).json(respons)
-        return
+        if (checkUser) {
+            const account = await prisma.bankAccount.create({
+                data: payload,
+            })
+
+            let respons = ResponseFormatter(account, 'create account is success', null, 200)
+            res.status(200).json(respons)
+            return
+        } else {
+            let respons = ResponseFormatter(null, 'id user not found', null, 404)
+            res.status(404).json(respons)
+            return
+        }
     } catch (error) {
         let respons = ResponseFormatter(null, 'internal server error', error, 500)
         res.status(500).json(respons)

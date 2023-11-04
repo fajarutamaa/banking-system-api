@@ -123,15 +123,64 @@ async function Delete(req, res) {
     const { id } = req.params
 
     try {
-        const users = await prisma.user.delete({
+        const CheckAccount = await prisma.bankAccount.findMany({
             where: {
                 id: parseInt(id)
             }
         })
 
-        let respons = ResponseFormatter(users, 'delete user success', null, 200)
-        res.status(200).json(respons)
-        return
+        const CheckProfile = await prisma.profile.findFirst({
+            where: {
+                id: parseInt(id)
+            }
+        })
+
+        if (CheckAccount.length > 0 || CheckProfile) {
+
+            const relatedBankAccounts = await prisma.bankAccount.findMany({
+                where: {
+                    user_id: parseInt(id),
+                }
+            })
+
+            for (const bankAccount of relatedBankAccounts) {
+                const relatedTransactions = await prisma.transaction.findMany({
+                    where: {
+                        source_account_id: bankAccount.id,
+                    }
+                })
+
+                for (const transaction of relatedTransactions) {
+                    await prisma.transaction.delete({
+                        where: {
+                            id: transaction.id,
+                        }
+                    })
+                }
+
+                for (const bankAccount of relatedBankAccounts) {
+                    await prisma.bankAccount.delete({
+                        where: {
+                            id: bankAccount.id,
+                        }
+                    })
+                }
+            }
+
+            const users = await prisma.user.delete({
+                where: {
+                    id: parseInt(id),  
+                },
+            })
+
+            let respons = ResponseFormatter(users, 'delete user success', null, 200)
+            res.status(200).json(respons)
+            return
+        } else {
+            let respons = ResponseFormatter(null, 'bad request', null, 400)
+            res.status(400).json(respons)
+            return
+        }
     } catch (error) {
         console.log(error)
         let respons = ResponseFormatter(null, 'internal server error', error, 500)

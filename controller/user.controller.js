@@ -143,28 +143,41 @@ async function Delete(req, res) {
 
 async function Update(req, res) {
 
-    const { name, password, email } = req.body
+    const { name, password, email, identity_type, identity_number, address } = req.body
     const { id } = req.params
 
-    const payload = {}
+    const payloadUser = {}
+    const payloadProfile = {}
 
 
-    if (!name && !password && !email) {
+    if (!name && !password && !email && !identity_type && !identity_number && !address) {
         let resp = ResponseFormatter(null, 'bad request', null, 400)
         res.json(resp)
         return
     }
 
     if (name) {
-        payload.name = name
+        payloadUser.name = name
     }
 
     if (email) {
-        payload.email = email
+        payloadUser.email = email
     }
 
     if (password) {
-        payload.password = password
+        payloadUser.password = password
+    }
+
+    if (identity_type) {
+        payloadProfile.identity_type = identity_type
+    }
+
+    if (identity_number) {
+        payloadProfile.identity_number = parseInt(identity_number)
+    }
+
+    if (address) {
+        payloadProfile.address = address
     }
 
     try {
@@ -172,12 +185,20 @@ async function Update(req, res) {
             where: {
                 id: parseInt(id)
             },
-            data: payload,
+            data: {
+                ...payloadUser,
+                profile: {
+                    update: {
+                        ...payloadProfile,
+                    }
+                }
+            }
         })
         let respons = ResponseFormatter(user, 'update user success', null, 200)
         res.json(respons)
         return
     } catch (error) {
+        console.log(error)
         let respons = ResponseFormatter(null, 'internal server error', error, 500)
         res.json(respons)
         return

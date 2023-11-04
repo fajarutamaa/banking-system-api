@@ -11,7 +11,7 @@ router.post('/', CheckAccount, Insert)
  *   get:
  *     tags : 
  *      - "account"
- *     summary: example to get user account
+ *     summary: Example to get user account
  *     responses:
  *       200:
  *         description: success
@@ -26,7 +26,7 @@ router.get('/', GetAll)
  *   get:
  *     tags : 
  *      - "account"
- *     summary: example to get user account by id
+ *     summary: Example to get user account by id
  *     parameters:
  *       - in: path
  *         name: id

@@ -27,5 +27,5 @@ app.use('/docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec))
 app.use('/API/v1/', router)
 
 app.listen(port, () => {
-  console.log(`App Listeming on port ${port}`)
+  console.log(`App Listening on port ${port}`)
 })

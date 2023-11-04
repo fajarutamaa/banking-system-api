@@ -11,7 +11,7 @@ router.post('/', CheckTransaction, Insert)
  *   get:
  *     tags : 
  *      - "transaction"
- *     summary: example to get history transaction
+ *     summary: Example to get history transaction
  *     responses:
  *       200:
  *         description: success
@@ -26,7 +26,7 @@ router.get('/', GetAll)
  *   get:
  *     tags : 
  *      - "transaction"
- *     summary: example to get all history transaction by id
+ *     summary: Example to get all history transaction by id
  *     parameters:
  *       - in: path
  *         name: id

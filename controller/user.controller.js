@@ -3,7 +3,6 @@ const { PrismaClient } = require('@prisma/client')
 
 const prisma = new PrismaClient()
 
-
 async function Insert(req, res) {
 
     const { name, password, email, identity_type, identity_number, address } = req.body
@@ -25,11 +24,12 @@ async function Insert(req, res) {
             }
         })
         let respons = ResponseFormatter(user, 'created user success', null, 200)
-        return res.json(respons)
+        res.status(200).json(respons)
+        return
 
     } catch (error) {
         let respons = ResponseFormatter(null, 'internal server error', error, 500)
-        res.json(respons)
+        res.status(500).json(respons)
         return
     }
 }
@@ -59,11 +59,11 @@ async function GetById(req, res) {
             },
         })
         let respons = ResponseFormatter(users, 'fetch user detail success', null, 200)
-        res.json(respons)
+        res.status(200).json(respons)
         return
     } catch (error) {
         let respons = ResponseFormatter(null, 'internal server error', error, 500)
-        res.json(respons)
+        res.status(500).json(respons)
         return
     }
 }
@@ -108,12 +108,12 @@ async function GetAll(req, res) {
 
         let pagination = Pagination(currentPage, totalCount, totalPages)
         let respons = ResponseFormatter(users, 'fetch all user success', null, 200)
-        res.json({ data: respons, pagination })
+        res.status(200).json({ data: respons, pagination })
         return
     } catch (error) {
         console.log(error)
         let respons = ResponseFormatter(null, 'internal server error', error, 500)
-        res.json(respons)
+        res.status(500).json(respons)
         return
     }
 }
@@ -125,46 +125,58 @@ async function Delete(req, res) {
     try {
         const users = await prisma.user.delete({
             where: {
-                id: parseInt(id),
+                id: parseInt(id)
             }
         })
 
         let respons = ResponseFormatter(users, 'delete user success', null, 200)
-        res.json(respons)
+        res.status(200).json(respons)
         return
     } catch (error) {
         console.log(error)
         let respons = ResponseFormatter(null, 'internal server error', error, 500)
-        res.json(respons)
+        res.status(500).json(respons)
         return
     }
-
 }
 
 async function Update(req, res) {
 
-    const { name, password, email } = req.body
+    const { name, password, email, identity_type, identity_number, address } = req.body
     const { id } = req.params
 
-    const payload = {}
+    const payloadUser = {}
+    const payloadProfile = {}
 
 
-    if (!name && !password && !email) {
-        let resp = ResponseFormatter(null, 'bad request', null, 400)
-        res.json(resp)
+    if (!name && !password && !email && !identity_type && !identity_number && !address) {
+        let respons = ResponseFormatter(null, 'bad request', null, 400)
+        res.status(400).json(respons)
         return
     }
 
     if (name) {
-        payload.name = name
+        payloadUser.name = name
     }
 
     if (email) {
-        payload.email = email
+        payloadUser.email = email
     }
 
     if (password) {
-        payload.password = password
+        payloadUser.password = password
+    }
+
+    if (identity_type) {
+        payloadProfile.identity_type = identity_type
+    }
+
+    if (identity_number) {
+        payloadProfile.identity_number = parseInt(identity_number)
+    }
+
+    if (address) {
+        payloadProfile.address = address
     }
 
     try {
@@ -172,14 +184,23 @@ async function Update(req, res) {
             where: {
                 id: parseInt(id)
             },
-            data: payload,
+            data: {
+                ...payloadUser,
+                profile: {
+                    update: {
+                        ...payloadProfile,
+                    }
+                }
+            }
         })
+
         let respons = ResponseFormatter(user, 'update user success', null, 200)
-        res.json(respons)
+        res.status(200).json(respons)
         return
     } catch (error) {
+        console.log(error)
         let respons = ResponseFormatter(null, 'internal server error', error, 500)
-        res.json(respons)
+        res.status(500).json(respons)
         return
     }
 }

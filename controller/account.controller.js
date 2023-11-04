@@ -3,7 +3,6 @@ const { PrismaClient } = require('@prisma/client')
 
 const prisma = new PrismaClient()
 
-
 async function Insert(req, res) {
 
     const { user_id, bank_name, bank_account_number } = req.body
@@ -20,11 +19,11 @@ async function Insert(req, res) {
         })
 
         let respons = ResponseFormatter(account, 'create account is success', null, 200)
-        res.json(respons)
+        res.status(200).json(respons)
         return
     } catch (error) {
         let respons = ResponseFormatter(null, 'internal server error', error, 500)
-        res.json(respons)
+        res.status(500).json(respons)
         return
     }
 }
@@ -69,11 +68,11 @@ async function GetAll(req, res) {
 
         let pagination = Pagination(currentPage, totalCount, totalPages)
         let respons = ResponseFormatter(accounts, 'fetch all account is success', null, 200)
-        res.json({ data: respons, pagination })
+        res.status(200).json({ data: respons, pagination })
         return
     } catch (error) {
         let respons = ResponseFormatter(null, 'internal server error', error, 500)
-        res.json(respons)
+        res.status(500).json(respons)
         return
     }
 
@@ -91,12 +90,11 @@ async function GetById(req, res) {
         })
 
         let respons = ResponseFormatter(accounts, 'fetch account by id is success', null, 200)
-        res.json(respons)
+        res.status(200).json(respons)
         return
     } catch (error) {
-        console.log(error)
         let respons = ResponseFormatter(null, 'internal server error', error, 500)
-        res.json(respons)
+        res.status(500).json(respons)
         return
     }
 }

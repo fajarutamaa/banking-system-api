@@ -43,12 +43,12 @@ async function Insert(req, res) {
             })
 
             let respons = ResponseFormatter(transaction, 'transaction success', null, 200)
-            res.json(respons)
+            res.status(200).json(respons)
             return
 
         } else {
             let respons = ResponseFormatter(null, 'id account not found', null, 404)
-            res.json(respons)
+            res.status(404).json(respons)
             return
         }
 
@@ -99,12 +99,12 @@ async function GetAll(req, res) {
 
         let pagination = Pagination(currentPage, totalCount, totalPages)
         let respons = ResponseFormatter(transactions, 'fetch all history transaction is success', null, 200)
-        res.json({ data: respons, pagination })
+        res.status(200).json({ data: respons, pagination })
         return
     } catch (error) {
         console.log(error)
         let respons = ResponseFormatter(null, 'internal server error', error, 500)
-        res.json(respons)
+        res.status(500).json(respons)
         return
     }
 }
@@ -122,11 +122,11 @@ async function GetById(req, res) {
         })
 
         let respons = ResponseFormatter(transactions, 'fetch all history transaction by source account id is success', null, 200)
-        res.json(respons)
+        res.status(200).json(respons)
         return
     } catch (error) {
         let respons = ResponseFormatter(null, 'internal server error', error, 500)
-        res.json(respons)
+        res.status(500).json(respons)
         return
     }
 }

@@ -123,71 +123,68 @@ async function Delete(req, res) {
     const { id } = req.params
 
     try {
-        const CheckAccount = await prisma.bankAccount.findMany({
-            where: {
-                id: parseInt(id)
-            }
-        })
+        const userId = parseInt(id)
 
-        const CheckProfile = await prisma.profile.findFirst({
-            where: {
-                id: parseInt(id)
-            }
-        })
-
-        if (CheckAccount.length > 0 || CheckProfile) {
-
-            const relatedBankAccounts = await prisma.bankAccount.findMany({
-                where: {
-                    user_id: parseInt(id),
-                }
-            })
-
-            for (const bankAccount of relatedBankAccounts) {
-                const relatedTransactions = await prisma.transaction.findMany({
-                    where: {
-                        source_account_id: bankAccount.id,
-                    }
-                })
-
-                for (const transaction of relatedTransactions) {
-                    await prisma.transaction.delete({
-                        where: {
-                            id: transaction.id,
-                        }
-                    })
-                }
-
-                for (const bankAccount of relatedBankAccounts) {
-                    await prisma.bankAccount.delete({
-                        where: {
-                            id: bankAccount.id,
-                        }
-                    })
-                }
-            }
-
-            const users = await prisma.user.delete({
-                where: {
-                    id: parseInt(id),  
-                },
-            })
-
-            let respons = ResponseFormatter(users, 'delete user success', null, 200)
-            res.status(200).json(respons)
-            return
-        } else {
-            let respons = ResponseFormatter(null, 'bad request', null, 400)
-            res.status(400).json(respons)
-            return
+        if (isNaN(userId) || userId <= 0) {
+            const response = ResponseFormatter(null, 'Bad request: Invalid ID', null, 400);
+            return res.status(400).json(response)
         }
+
+        const userExists = await prisma.user.findUnique({
+            where: {
+                id: userId,
+            }
+        })
+
+        if (!userExists) {
+            const response = ResponseFormatter(null, 'Bad request: User not found', null, 400);
+            return res.status(400).json(response)
+        }
+
+        await prisma.transaction.deleteMany({
+            where: {
+                sourceAccount: {
+                    user_id: userId,
+                }
+            }
+        })
+
+        await prisma.bankAccount.deleteMany({
+            where: {
+                user_id: userId,
+            }
+        })
+
+
+        const userProfile = await prisma.profile.findUnique({
+            where: {
+                user_id: userId,
+            }
+        })
+
+        if (userProfile) {
+            await prisma.profile.delete({
+                where: {
+                    id: userProfile.id,
+                }
+            })
+        }
+
+        await prisma.user.delete({
+            where: {
+                id: userId,
+            }
+        })
+
+        const response = ResponseFormatter(null, 'User and related data deleted successfully', null, 200);
+        return res.status(200).json(response);
     } catch (error) {
-        console.log(error)
-        let respons = ResponseFormatter(null, 'internal server error', error, 500)
-        res.status(500).json(respons)
-        return
+        console.error(error);
+        const response = ResponseFormatter(null, 'Internal server error', error, 500);
+        return res.status(500).json(response);
     }
 }
+
 
 async function Update(req, res) {
 

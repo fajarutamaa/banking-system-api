@@ -69,7 +69,6 @@ async function GetById(req, res) {
     }
 }
 
-
 async function GetAll(req, res) {
 
     const { name, password, email, page, perPage } = req.query

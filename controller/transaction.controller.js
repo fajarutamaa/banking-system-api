@@ -4,8 +4,7 @@ const { PrismaClient } = require('@prisma/client')
 const prisma = new PrismaClient()
 
 async function Insert(req, res) {
-
-    const { source_account_id, destination_account_id, amount } = req.body
+    const { source_account_id, destination_account_id, amount } = req.body;
 
     const payload = {
         source_account_id: parseInt(source_account_id),
@@ -14,18 +13,17 @@ async function Insert(req, res) {
     }
 
     try {
-
         const sourceAccount = await prisma.bankAccount.findUnique({
             where: {
-                id: parseInt(source_account_id),
+                user_id: payload.source_account_id,
             }
-        })
+        });
 
         const destinationAccount = await prisma.bankAccount.findUnique({
             where: {
-                id: parseInt(destination_account_id),
+                user_id: payload.destination_account_id,
             }
-        })
+        });
 
         if (sourceAccount && destinationAccount) {
 
@@ -33,28 +31,26 @@ async function Insert(req, res) {
                 data: payload,
             })
 
-            const updateBalance = await prisma.bankAccount.update({
+            await prisma.bankAccount.update({
                 where: {
-                    id: parseInt(destination_account_id)
+                    user_id: payload.destination_account_id,
                 },
                 data: {
-                    balance: parseInt(destinationAccount.balance) + parseInt(payload.amount),
-                },
+                    balance: destinationAccount.balance + payload.amount,
+                }
             })
 
-            let respons = ResponseFormatter(transaction, 'transaction success', null, 200)
+            let respons = ResponseFormatter(transaction, 'transaction success', null, 200);
             res.status(200).json(respons)
             return
-
         } else {
-            let respons = ResponseFormatter(null, 'id account not found', null, 404)
+            let respons = ResponseFormatter(null, 'Account not found', null, 404);
             res.status(404).json(respons)
             return
         }
-
     } catch (error) {
-        let respons = ResponseFormatter(null, 'internal server error', error, 500)
-        res.json(respons)
+        let respons = ResponseFormatter(null, 'Internal server error', error, 500);
+        res.status(500).json(respons)
         return
     }
 }

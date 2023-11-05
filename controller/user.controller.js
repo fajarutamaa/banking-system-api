@@ -127,7 +127,8 @@ async function Delete(req, res) {
 
         if (isNaN(userId) || userId <= 0) {
             const response = ResponseFormatter(null, 'Bad request: Invalid ID', null, 400);
-            return res.status(400).json(response)
+            res.status(400).json(response)
+            return 
         }
 
         const userExists = await prisma.user.findUnique({
@@ -138,7 +139,8 @@ async function Delete(req, res) {
 
         if (!userExists) {
             const response = ResponseFormatter(null, 'Bad request: User not found', null, 400);
-            return res.status(400).json(response)
+            res.status(400).json(response)
+            return 
         }
 
         await prisma.transaction.deleteMany({
@@ -177,11 +179,12 @@ async function Delete(req, res) {
         })
 
         const response = ResponseFormatter(null, 'User and related data deleted successfully', null, 200);
-        return res.status(200).json(response);
+        res.status(200).json(response)
+        return 
     } catch (error) {
-        console.error(error);
         const response = ResponseFormatter(null, 'Internal server error', error, 500);
-        return res.status(500).json(response);
+        res.status(500).json(response)
+        return
     }
 }
 
@@ -244,7 +247,6 @@ async function Update(req, res) {
         res.status(200).json(respons)
         return
     } catch (error) {
-        console.log(error)
         let respons = ResponseFormatter(null, 'internal server error', error, 500)
         res.status(500).json(respons)
         return

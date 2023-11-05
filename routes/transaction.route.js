@@ -17,18 +17,12 @@ const { CheckTransaction } = require('../middleware/middleware')
  *           schema:
  *             type: object
  *             properties:
- *               name:
- *                 type: string
- *               email:
- *                 type: string
- *               password:
- *                 type: string
- *               identity_type:
- *                 type: string
- *               identity_number:
+ *               source_account_id :
  *                 type: integer
- *               address:
- *                 type: string
+ *               destination_account_id:
+ *                 type: integer
+ *               amount:
+ *                 type: integer
  *     responses:
  *       '200':
  *         description: Success

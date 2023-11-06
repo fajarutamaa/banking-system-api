@@ -48,12 +48,12 @@ async function GetAll(req, res) {
 
     try {
 
+        const currentPage = parseInt(page) || 1
+        const itemsPerPage = parseInt(perPage) || 10
+
         const totalCount = await prisma.bankAccount.count({
             where: payload,
         })
-
-        const currentPage = parseInt(page) || 1
-        const itemsPerPage = parseInt(perPage) || 10
 
         const accounts = await prisma.bankAccount.findMany({
             where: payload,
@@ -94,7 +94,6 @@ async function GetById(req, res) {
             let respons = ResponseFormatter(null, 'id account not found', null, 404)
             res.status(404).json(respons)
             return
-
         } else {
             const accounts = await prisma.bankAccount.findUnique({
                 where: {

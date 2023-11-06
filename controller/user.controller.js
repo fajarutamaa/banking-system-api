@@ -100,12 +100,12 @@ async function GetAll(req, res) {
     }
 
     try {
+        const currentPage = parseInt(page) || 1
+        const itemsPerPage = parseInt(perPage) || 10
+
         const totalCount = await prisma.user.count({
             where: payload,
         })
-
-        const currentPage = parseInt(page) || 1
-        const itemsPerPage = parseInt(perPage) || 10
 
         const users = await prisma.user.findMany({
             where: payload,
@@ -135,9 +135,9 @@ async function Delete(req, res) {
     const { id } = req.params
 
     try {
-        const userId = parseInt(id)
+        const user_id = parseInt(id)
 
-        if (isNaN(userId) || userId <= 0) {
+        if (isNaN(user_id) || user_id <= 0) {
             const response = ResponseFormatter(null, 'Bad request: Invalid ID', null, 400);
             res.status(400).json(response)
             return
@@ -145,7 +145,7 @@ async function Delete(req, res) {
 
         const userExists = await prisma.user.findUnique({
             where: {
-                id: userId,
+                id: user_id,
             }
         })
 
@@ -158,21 +158,21 @@ async function Delete(req, res) {
         await prisma.transaction.deleteMany({
             where: {
                 sourceAccount: {
-                    user_id: userId,
+                    user_id: user_id,
                 }
             }
         })
 
         await prisma.bankAccount.deleteMany({
             where: {
-                user_id: userId,
+                user_id: user_id,
             }
         })
 
 
         const userProfile = await prisma.profile.findUnique({
             where: {
-                user_id: userId,
+                user_id: user_id,
             }
         })
 
@@ -186,7 +186,7 @@ async function Delete(req, res) {
 
         await prisma.user.delete({
             where: {
-                id: userId,
+                id: user_id,
             }
         })
 

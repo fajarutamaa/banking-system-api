@@ -1,14 +1,23 @@
 const jwt = require('jsonwebtoken')
-const bcrypt = require('bcrypt')
-const { ResponseFormatter } = require('../helper/resp.helper')
+const { ComparePassword, HashPassword } = require('../helper/pass.helper')
+const { ResponseFormatter, } = require('../helper/resp.helper')
 const { PrismaClient } = require('@prisma/client')
 
 const prisma = new PrismaClient()
+
 require('dotenv').config()
 
 async function Register(req, res, next) {
 
     const { name, email, password } = req.body
+
+    const hashPass = await HashPassword(password)
+
+    const payload = {
+        name: name,
+        email: email,
+        password: hashPass
+    }
 
     try {
 
@@ -23,17 +32,15 @@ async function Register(req, res, next) {
             res.status(400).json(respons)
             return
         }
-        const saltRounds = parseInt(process.env.SALT_ROUNDS)
-        let encryptedPassword = await bcrypt.hash(password, saltRounds)
-        const user = await prisma.user.create({
+
+        await prisma.user.create({
             data: {
-                name: name,
-                email: email,
-                password: encryptedPassword,
+                payload,
             },
         })
-        let respons = ResponseFormatter(user, 'created success', null, 201)
-        res.status(201).json(respons)
+
+        let respons = ResponseFormatter(null, 'created success', null, 200)
+        res.status(200).json(respons)
         return
 
     } catch (error) {
@@ -46,9 +53,10 @@ async function Login(req, res, next) {
     const { email, password } = req.body
 
     try {
+
         const user = await prisma.user.findUnique({
             where: {
-                email,
+                email: email,
             }
         })
 
@@ -58,16 +66,18 @@ async function Login(req, res, next) {
             return
         }
 
-        let isPasswordCorrect = await bcrypt.compare(password, user.password)
-        if (!isPasswordCorrect) {
+        let checkPassword = await ComparePassword(password, user.password)
+
+        if (!checkPassword) {
             let respons = ResponseFormatter(null, 'bad request', 'invalid email or password', 400)
             res.status(400).json(respons)
             return
         }
 
-        let token = jwt.sign(user, 'JWT_SECRET_KEY')
-        let respons = ResponseFormatter({ user, token }, 'Created', null, 201)
-        res.status(201).json(respons)
+        let token = jwt.sign(user, process.env.SECRET_KEY)
+
+        let respons = ResponseFormatter({ user, token }, 'success', null, 200)
+        res.status(200).json(respons)
         return
 
     } catch (error) {
@@ -76,8 +86,15 @@ async function Login(req, res, next) {
 
 }
 
+function Whoami(req, res) {
+    let respons = ResponseFormatter({ user: req.user }, 'success', null, 200)
+    res.status(200).json(respons)
+    return
+}
+
 
 module.exports = {
     Register,
-    Login
+    Login,
+    Whoami
 }

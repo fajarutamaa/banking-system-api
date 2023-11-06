@@ -3,7 +3,6 @@ const router = express.Router()
 const { Insert, GetAll, GetById } = require('../controller/transaction.controller')
 const { CheckTransaction } = require('../middleware/middleware')
 
-
 /**
  * @swagger
  * /API/v1/transaction:

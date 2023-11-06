@@ -4,6 +4,7 @@ const app = express()
 const router = require('./routes/route')
 const swaggerUI = require('swagger-ui-express')
 const { swaggerDefinition } = require('./helper/swagger.define')
+const flash = require('express-flash')
 
 require('dotenv').config()
 

@@ -4,6 +4,7 @@ const { PrismaClient } = require('@prisma/client')
 const prisma = new PrismaClient()
 
 async function Insert(req, res) {
+
     const { source_account_id, destination_account_id, amount } = req.body;
 
     const payload = {
@@ -17,16 +18,19 @@ async function Insert(req, res) {
             where: {
                 user_id: payload.source_account_id,
             }
-        });
+        })
 
         const destinationAccount = await prisma.bankAccount.findUnique({
             where: {
                 user_id: payload.destination_account_id,
             }
-        });
+        })
 
-        if (sourceAccount && destinationAccount) {
-
+        if (!sourceAccount && !destinationAccount) {
+            let respons = ResponseFormatter(null, 'Account not found', null, 404);
+            res.status(404).json(respons)
+            return
+        } else {
             const transaction = await prisma.transaction.create({
                 data: payload,
             })
@@ -39,17 +43,12 @@ async function Insert(req, res) {
                     balance: destinationAccount.balance + payload.amount,
                 }
             })
-
             let respons = ResponseFormatter(transaction, 'transaction success', null, 200);
             res.status(200).json(respons)
             return
-        } else {
-            let respons = ResponseFormatter(null, 'Account not found', null, 404);
-            res.status(404).json(respons)
-            return
         }
     } catch (error) {
-        let respons = ResponseFormatter(null, 'Internal server error', error, 500);
+        let respons = ResponseFormatter(null, 'internal server error', error, 500);
         res.status(500).json(respons)
         return
     }
@@ -75,12 +74,12 @@ async function GetAll(req, res) {
 
     try {
 
+        const currentPage = parseInt(page) || 1
+        const itemsPerPage = parseInt(perPage) || 10
+
         const totalCount = await prisma.transaction.count({
             where: payload,
         })
-
-        const currentPage = parseInt(page) || 1
-        const itemsPerPage = parseInt(perPage) || 10
 
         const transactions = await prisma.transaction.findMany({
             where: payload,
@@ -122,7 +121,7 @@ async function GetById(req, res) {
                 createdAt: true,
                 destinationAccount: {
                     select: {
-                        user_id:true,
+                        user_id: true,
                         bank_name: true,
                         bank_account_number: true
                     }

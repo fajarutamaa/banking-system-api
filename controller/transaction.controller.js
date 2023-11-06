@@ -107,20 +107,43 @@ async function GetAll(req, res) {
 
 async function GetById(req, res) {
 
-    const { source_account_id } = req.params
+    const { id } = req.params
 
     try {
-
         const transactions = await prisma.transaction.findMany({
             where: {
-                id: source_account_id
+                sourceAccount: {
+                    user_id: parseInt(id),
+                }
+            },
+            select: {
+                source_account_id: true,
+                amount: true,
+                createdAt: true,
+                destinationAccount: {
+                    select: {
+                        user_id:true,
+                        bank_name: true,
+                        bank_account_number: true
+                    }
+                },
             }
-        })
+        }
+        )
 
-        let respons = ResponseFormatter(transactions, 'fetch all history transaction by source account id is success', null, 200)
-        res.status(200).json(respons)
-        return
+        if (!transactions) {
+            let respons = ResponseFormatter(null, 'transaction not found', null, 404)
+            res.status(404).json(respons)
+            return
+
+        } else {
+            let respons = ResponseFormatter(transactions, 'fetch all history transaction by source account id is success', null, 200)
+            res.status(200).json(respons)
+            return
+        }
+
     } catch (error) {
+        console.log(error)
         let respons = ResponseFormatter(null, 'internal server error', error, 500)
         res.status(500).json(respons)
         return

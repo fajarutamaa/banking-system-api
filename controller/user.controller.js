@@ -39,28 +39,40 @@ async function GetById(req, res) {
     const { id } = req.params
 
     try {
-        let users = await prisma.user.findUnique({
-            select: {
-                id: true,
-                name: true,
-                email: true,
-                password: true,
-                profile: {
-                    select: {
-                        user_id: true,
-                        identity_type: true,
-                        identity_number: true,
-                        address: true,
-                    }
-                }
-            },
+        const checkUser = await prisma.user.findUnique({
             where: {
-                id: parseInt(id)
-            },
+                id: parseInt(id),
+            }
         })
-        let respons = ResponseFormatter(users, 'fetch user detail success', null, 200)
-        res.status(200).json(respons)
-        return
+
+        if (!checkUser) {
+            let respons = ResponseFormatter(null, 'id user not found', null, 404)
+            res.status(404).json(respons)
+            return
+        } else {
+            const users = await prisma.user.findUnique({
+                select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                    password: true,
+                    profile: {
+                        select: {
+                            user_id: true,
+                            identity_type: true,
+                            identity_number: true,
+                            address: true,
+                        }
+                    }
+                },
+                where: {
+                    id: parseInt(id)
+                },
+            })
+            let respons = ResponseFormatter(users, 'fetch user detail success', null, 200)
+            res.status(200).json(respons)
+            return
+        }
     } catch (error) {
         let respons = ResponseFormatter(null, 'internal server error', error, 500)
         res.status(500).json(respons)
@@ -128,7 +140,7 @@ async function Delete(req, res) {
         if (isNaN(userId) || userId <= 0) {
             const response = ResponseFormatter(null, 'Bad request: Invalid ID', null, 400);
             res.status(400).json(response)
-            return 
+            return
         }
 
         const userExists = await prisma.user.findUnique({
@@ -140,7 +152,7 @@ async function Delete(req, res) {
         if (!userExists) {
             const response = ResponseFormatter(null, 'Bad request: User not found', null, 400);
             res.status(400).json(response)
-            return 
+            return
         }
 
         await prisma.transaction.deleteMany({
@@ -180,7 +192,7 @@ async function Delete(req, res) {
 
         const response = ResponseFormatter(null, 'User and related data deleted successfully', null, 200);
         res.status(200).json(response)
-        return 
+        return
     } catch (error) {
         const response = ResponseFormatter(null, 'Internal server error', error, 500);
         res.status(500).json(response)

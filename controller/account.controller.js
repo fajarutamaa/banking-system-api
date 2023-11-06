@@ -14,13 +14,13 @@ async function Insert(req, res) {
     }
 
     try {
-            const account = await prisma.bankAccount.create({
-                data: payload,
-            })
+        const account = await prisma.bankAccount.create({
+            data: payload,
+        })
 
-            let respons = ResponseFormatter(account, 'create account is success', null, 200)
-            res.status(200).json(respons)
-            return
+        let respons = ResponseFormatter(account, 'create account is success', null, 200)
+        res.status(200).json(respons)
+        return
     } catch (error) {
         let respons = ResponseFormatter(null, 'internal server error', error, 500)
         res.status(500).json(respons)
@@ -83,15 +83,29 @@ async function GetById(req, res) {
     const { id } = req.params
 
     try {
-        const accounts = await prisma.bankAccount.findUnique({
+
+        const checkAccount = await prisma.bankAccount.findUnique({
             where: {
                 user_id: parseInt(id),
             }
         })
 
-        let respons = ResponseFormatter(accounts, 'fetch account by id is success', null, 200)
-        res.status(200).json(respons)
-        return
+        if (!checkAccount) {
+            let respons = ResponseFormatter(null, 'id account not found', null, 404)
+            res.status(404).json(respons)
+            return
+
+        } else {
+            const accounts = await prisma.bankAccount.findUnique({
+                where: {
+                    user_id: parseInt(id),
+                }
+            })
+
+            let respons = ResponseFormatter(accounts, 'fetch account by id is success', null, 200)
+            res.status(200).json(respons)
+            return
+        }
     } catch (error) {
         let respons = ResponseFormatter(null, 'internal server error', error, 500)
         res.status(500).json(respons)

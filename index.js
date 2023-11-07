@@ -30,3 +30,6 @@ app.use('/API/v1/', router)
 app.listen(port, () => {
   console.log(`App Listening on port ${port}`)
 })
+
+
+module.exports = app

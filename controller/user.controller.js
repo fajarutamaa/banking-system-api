@@ -100,22 +100,14 @@ async function GetAll(req, res) {
     }
 
     try {
-<<<<<<< HEAD
+
         const currentPage = parseInt(page) || 1
         const itemsPerPage = parseInt(perPage) || 10
 
-=======
->>>>>>> main
         const totalCount = await prisma.user.count({
             where: payload,
         })
 
-<<<<<<< HEAD
-=======
-        const currentPage = parseInt(page) || 1
-        const itemsPerPage = parseInt(perPage) || 10
-
->>>>>>> main
         const users = await prisma.user.findMany({
             where: payload,
             orderBy: {
@@ -129,11 +121,8 @@ async function GetAll(req, res) {
 
         let pagination = Pagination(currentPage, totalCount, totalPages)
         let respons = ResponseFormatter(users, 'fetch all user success', null, 200)
-<<<<<<< HEAD
+
         res.status(200).json({ data: respons, pagination })
-=======
-        res.json({ data: respons, pagination })
->>>>>>> main
         return
     } catch (error) {
         console.log(error)
@@ -148,7 +137,7 @@ async function Delete(req, res) {
     const { id } = req.params
 
     try {
-<<<<<<< HEAD
+
         const user_id = parseInt(id)
 
         if (isNaN(user_id) || user_id <= 0) {
@@ -210,21 +199,6 @@ async function Delete(req, res) {
     } catch (error) {
         const response = ResponseFormatter(null, 'Internal server error', error, 500);
         res.status(500).json(response)
-=======
-        const users = await prisma.user.delete({
-            where: {
-                id: parseInt(id),
-            }
-        })
-
-        let respons = ResponseFormatter(users, 'delete user success', null, 200)
-        res.json(respons)
-        return
-    } catch (error) {
-        console.log(error)
-        let respons = ResponseFormatter(null, 'internal server error', error, 500)
-        res.json(respons)
->>>>>>> main
         return
     }
 }
@@ -239,15 +213,9 @@ async function Update(req, res) {
     const payloadProfile = {}
 
 
-<<<<<<< HEAD
     if (!name && !password && !email && !identity_type && !identity_number && !address) {
         let respons = ResponseFormatter(null, 'bad request', null, 400)
         res.status(400).json(respons)
-=======
-    if (!name && !password && !email) {
-        let resp = ResponseFormatter(null, 'bad request', null, 400)
-        res.json(resp)
->>>>>>> main
         return
     }
 

@@ -1,6 +1,7 @@
 const request = require('supertest')
 const app = require('../')
 
+
 describe('GET Endpoints', () => {
     it('Should fetch all users data', async () => {
         const res = await request(app)
@@ -11,7 +12,7 @@ describe('GET Endpoints', () => {
     })
 
     it('Should fetch a user by ID', async () => {
-        const user_id = 8
+        const user_id = 9
         const res = await request(app)
             .get(`/API/v1/user/${user_id}`)
 
@@ -28,7 +29,7 @@ describe('GET Endpoints', () => {
     })
 
     it('Should fetch an account by ID', async () => {
-        const account_id = 8
+        const account_id = 9
         const res = await request(app)
             .get(`/API/v1/account/${account_id}`)
 
@@ -45,7 +46,7 @@ describe('GET Endpoints', () => {
     })
 
     it('Should fetch an transaction by ID', async () => {
-        const id = 8
+        const id = 9
         const res = await request(app)
             .get(`/API/v1/transaction/${id}`)
 

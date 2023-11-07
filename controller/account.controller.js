@@ -3,7 +3,6 @@ const { PrismaClient } = require('@prisma/client')
 
 const prisma = new PrismaClient()
 
-
 async function Insert(req, res) {
 
     const { user_id, bank_name, bank_account_number } = req.body
@@ -20,11 +19,15 @@ async function Insert(req, res) {
         })
 
         let respons = ResponseFormatter(account, 'create account is success', null, 200)
+<<<<<<< HEAD
+        res.status(200).json(respons)
+=======
         res.json(respons)
+>>>>>>> main
         return
     } catch (error) {
         let respons = ResponseFormatter(null, 'internal server error', error, 500)
-        res.json(respons)
+        res.status(500).json(respons)
         return
     }
 }
@@ -49,13 +52,22 @@ async function GetAll(req, res) {
 
     try {
 
+<<<<<<< HEAD
+        const currentPage = parseInt(page) || 1
+        const itemsPerPage = parseInt(perPage) || 10
+
+=======
+>>>>>>> main
         const totalCount = await prisma.bankAccount.count({
             where: payload,
         })
 
+<<<<<<< HEAD
+=======
         const currentPage = parseInt(page) || 1
         const itemsPerPage = parseInt(perPage) || 10
 
+>>>>>>> main
         const accounts = await prisma.bankAccount.findMany({
             where: payload,
             orderBy: {
@@ -69,11 +81,15 @@ async function GetAll(req, res) {
 
         let pagination = Pagination(currentPage, totalCount, totalPages)
         let respons = ResponseFormatter(accounts, 'fetch all account is success', null, 200)
+<<<<<<< HEAD
+        res.status(200).json({ data: respons, pagination })
+=======
         res.json({ data: respons, pagination })
+>>>>>>> main
         return
     } catch (error) {
         let respons = ResponseFormatter(null, 'internal server error', error, 500)
-        res.json(respons)
+        res.status(500).json(respons)
         return
     }
 
@@ -84,19 +100,39 @@ async function GetById(req, res) {
     const { id } = req.params
 
     try {
-        const accounts = await prisma.bankAccount.findUnique({
+
+        const checkAccount = await prisma.bankAccount.findUnique({
             where: {
-                id: parseInt(id),
+                user_id: parseInt(id),
             }
         })
 
+<<<<<<< HEAD
+        if (!checkAccount) {
+            let respons = ResponseFormatter(null, 'id account not found', null, 404)
+            res.status(404).json(respons)
+            return
+        } else {
+            const accounts = await prisma.bankAccount.findUnique({
+                where: {
+                    user_id: parseInt(id),
+                }
+            })
+
+            let respons = ResponseFormatter(accounts, 'fetch account by id is success', null, 200)
+            res.status(200).json(respons)
+            return
+        }
+    } catch (error) {
+=======
         let respons = ResponseFormatter(accounts, 'fetch account by id is success', null, 200)
         res.json(respons)
         return
     } catch (error) {
         console.log(error)
+>>>>>>> main
         let respons = ResponseFormatter(null, 'internal server error', error, 500)
-        res.json(respons)
+        res.status(500).json(respons)
         return
     }
 }

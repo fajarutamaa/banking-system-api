@@ -3,6 +3,31 @@ const router = express.Router()
 const { Insert, GetAll, GetById } = require('../controller/transaction.controller')
 const { CheckTransaction } = require('../middleware/middleware')
 
+/**
+ * @swagger
+ * /API/v1/transaction:
+ *   post:
+ *     tags:
+ *       - transaction
+ *     summary: Create a user
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               source_account_id :
+ *                 type: integer
+ *               destination_account_id:
+ *                 type: integer
+ *               amount:
+ *                 type: integer
+ *     responses:
+ *       '200':
+ *         description: Success
+ *       '500':
+ *         description: Internal server error
+ */
 router.post('/', CheckTransaction, Insert)
 
 /**
@@ -10,8 +35,8 @@ router.post('/', CheckTransaction, Insert)
  * /API/v1/transaction:
  *   get:
  *     tags : 
- *      - "transaction"
- *     summary: example to get history transaction
+ *      - transaction
+ *     summary: Example to get history transaction
  *     responses:
  *       200:
  *         description: success
@@ -25,8 +50,8 @@ router.get('/', GetAll)
  * /API/v1/transaction/{id}:
  *   get:
  *     tags : 
- *      - "transaction"
- *     summary: example to get all history transaction by id
+ *      - transaction
+ *     summary: Example to get all history transaction by id
  *     parameters:
  *       - in: path
  *         name: id

@@ -50,8 +50,8 @@ model BankAccount {
 
 model Transaction {
   id                     Int         @id @default(autoincrement())
-  source_account_id      Int
-  destination_account_id Int
+  source_account_id      Int         
+  destination_account_id Int         
   amount                 Int
   createdAt              DateTime    @default(now())
   updatedAt              DateTime    @updatedAt

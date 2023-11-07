@@ -1,5 +1,5 @@
 const request = require('supertest')
-const app = require('../index')
+const app = require('../')
 
 describe('GET Endpoints', () => {
     it('Should fetch all users data', async () => {
@@ -53,4 +53,3 @@ describe('GET Endpoints', () => {
         expect(res.body.data).toBeTruthy()
     })
 })
-

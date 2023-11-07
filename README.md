@@ -15,6 +15,11 @@ Compile and hot-reload for development :
 
       npm run dev
 
+Unit testing for development :
+
+      npm test
+
+
 ## Environment Variables Settings
 
 There is a required environment variable that needs to be set in `.env`
@@ -38,6 +43,8 @@ submit:
 
 ## Tech Stack
 - [x] Express Js
+- [x] Jest
+- [x] Supertest
 - [x] Prisma
 - [x] PostgresSQL 16
 - [x] PgAdmin V7

@@ -1,7 +1,15 @@
+<<<<<<< HEAD
 const express = require('express');
 const router = express.Router();
 const { Insert, GetById, Delete, Update, GetAll } = require('../controller/user.controller');
 const { CheckUser } = require('../middleware/middleware');
+=======
+const express = require('express')
+const router = express.Router()
+const { Insert, GetById, Delete, Update, GetAll } = require('../controller/user.controller')
+const { CheckUser } = require('../middleware/middleware')
+
+>>>>>>> main
 
 /**
  * @swagger
@@ -34,7 +42,11 @@ const { CheckUser } = require('../middleware/middleware');
  *       '500':
  *         description: Internal server error
  */
+<<<<<<< HEAD
 router.post('/', CheckUser, Insert);
+=======
+router.post('/', CheckUser, Insert)
+>>>>>>> main
 
 /**
  * @swagger

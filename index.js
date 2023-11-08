@@ -26,8 +26,11 @@ app.use(express.urlencoded({ extended: false }))
 app.use('/docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec))
 app.use('/API/v1/', router)
 
-if (process.env.NODE_ENV !== 'test'){
-  app.listen(port)
+
+if (process.env.NODE_ENV  !== 'test') {
+  app.listen(port, () => {
+    console.log(`Server is running on port : ${port}`)
+  })
 }
 
 module.exports = app

@@ -22,6 +22,7 @@ async function Insert(req, res) {
         res.status(200).json(respons)
         return
     } catch (error) {
+        console.log(error)
         let respons = ResponseFormatter(null, 'internal server error', error, 500)
         res.status(500).json(respons)
         return

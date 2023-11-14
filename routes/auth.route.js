@@ -5,7 +5,7 @@ const { Authenticate } = require('../middleware/restrict')
 
 router.post('/register', Register)
 router.post('/login', Login)
-router.get('/Whoami', Authenticate, Whoami)
+router.get('/whoami', Authenticate, Whoami)
 
 
 module.exports = router

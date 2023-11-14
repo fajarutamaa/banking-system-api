@@ -1,9 +1,8 @@
 
 const express = require('express');
 const router = express.Router();
-const { Insert, GetById, Delete, Update, GetAll } = require('../controller/user.controller');
+const { CreateUser, FetchUser, FetchAllUser, DeleteUser, UpdateUser } = require('../controller/user.controller');
 const { CheckUser } = require('../middleware/middleware');
-
 
 /**
  * @swagger
@@ -37,7 +36,7 @@ const { CheckUser } = require('../middleware/middleware');
  *         description: Internal server error
  */
 
-router.post('/', CheckUser, Insert);
+router.post('/', CheckUser, CreateUser)
 
 
 /**
@@ -60,7 +59,7 @@ router.post('/', CheckUser, Insert);
  *       '500':
  *         description: Internal server error
  */
-router.get('/:id', GetById);
+router.get('/:id', FetchUser)
 
 /**
  * @swagger
@@ -100,7 +99,7 @@ router.get('/:id', GetById);
  *       '500':
  *         description: Internal server error
  */
-router.put('/:id', Update);
+router.put('/:id', UpdateUser)
 
 /**
  * @swagger
@@ -122,7 +121,7 @@ router.put('/:id', Update);
  *       '500':
  *         description: Internal server error
  */
-router.delete('/:id', Delete);
+router.delete('/:id', DeleteUser)
 
 /**
  * @swagger
@@ -137,6 +136,6 @@ router.delete('/:id', Delete);
  *       '500':
  *         description: Internal server error
  */
-router.get('/', GetAll);
+router.get('/', FetchAllUser)
 
 module.exports = router;

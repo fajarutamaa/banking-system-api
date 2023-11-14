@@ -3,32 +3,32 @@ const { PrismaClient } = require('@prisma/client')
 
 const prisma = new PrismaClient()
 
-async function Insert(req, res) {
+async function CreateAccount(req, res) {
 
     const { user_id, bank_name, bank_account_number } = req.body
 
     const payload = {
         user_id: parseInt(user_id),
         bank_name,
-        bank_account_number: parseInt(bank_account_number),
+        bank_account_number: parseInt(bank_account_number)
     }
 
     try {
         const account = await prisma.bankAccount.create({
-            data: payload,
+            data: payload
         })
 
-        let respons = ResponseFormatter(account, 'create account is success', null, 200)
-        res.status(200).json(respons)
+        let response = ResponseFormatter(account, 'account creation is successful', null, 200)
+        res.status(200).json(response)
         return
     } catch (error) {
-        let respons = ResponseFormatter(null, 'internal server error', error, 500)
-        res.status(500).json(respons)
+        let response = ResponseFormatter(null, 'internal server error', error, 500)
+        res.status(500).json(response)
         return
     }
 }
 
-async function GetAll(req, res) {
+async function FetchAllAccount(req, res) {
 
     const { user_id, bank_name, bank_account_number, page, perPage } = req.query
 
@@ -48,12 +48,11 @@ async function GetAll(req, res) {
 
     try {
 
-
         const currentPage = parseInt(page) || 1
         const itemsPerPage = parseInt(perPage) || 10
 
         const totalCount = await prisma.bankAccount.count({
-            where: payload,
+            where: payload
         })
 
         const accounts = await prisma.bankAccount.findMany({
@@ -68,19 +67,17 @@ async function GetAll(req, res) {
         const totalPages = Math.ceil(totalCount / itemsPerPage)
 
         let pagination = Pagination(currentPage, totalCount, totalPages)
-        let respons = ResponseFormatter(accounts, 'fetch all account is success', null, 200)
-
-        res.status(200).json({ data: respons, pagination })
+        let response = ResponseFormatter(accounts, 'fetch all account is success', null, 200)
+        res.status(200).json({ data: response, pagination })
         return
     } catch (error) {
-        let respons = ResponseFormatter(null, 'internal server error', error, 500)
-        res.status(500).json(respons)
+        let response = ResponseFormatter(null, 'internal server error', error, 500)
+        res.status(500).json(response)
         return
     }
-
 }
 
-async function GetById(req, res) {
+async function FetchAccount(req, res) {
 
     const { id } = req.params
 
@@ -88,35 +85,34 @@ async function GetById(req, res) {
 
         const checkAccount = await prisma.bankAccount.findUnique({
             where: {
-                user_id: parseInt(id),
+                user_id: parseInt(id)
             }
         })
 
-
         if (!checkAccount) {
-            let respons = ResponseFormatter(null, 'id account not found', null, 404)
-            res.status(404).json(respons)
+            let response = ResponseFormatter(null, 'id account not found', null, 404)
+            res.status(404).json(response)
             return
         } else {
             const accounts = await prisma.bankAccount.findUnique({
                 where: {
-                    user_id: parseInt(id),
+                    user_id: parseInt(id)
                 }
             })
 
-            let respons = ResponseFormatter(accounts, 'fetch account by id is success', null, 200)
-            res.status(200).json(respons)
+            let response = ResponseFormatter(accounts, 'fetch account by id is success', null, 200)
+            res.status(200).json(response)
             return
         }
     } catch (error) {
-        let respons = ResponseFormatter(null, 'internal server error', error, 500)
-        res.status(500).json(respons)
+        let response = ResponseFormatter(null, 'internal server error', error, 500)
+        res.status(500).json(response)
         return
     }
 }
 
 module.exports = {
-    Insert,
-    GetAll,
-    GetById
+    CreateAccount,
+    FetchAllAccount,
+    FetchAccount
 }

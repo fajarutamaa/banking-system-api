@@ -1,15 +1,15 @@
 const express = require('express')
 const router = express.Router()
-const { Insert, GetAll, GetById } = require('../controller/transaction.controller')
+const { AddTransaction, FetchAllHistoryTransaction, FetchHistoryTransactionById } = require('../controller/transaction.controller')
 const { CheckTransaction } = require('../middleware/middleware')
 
 /**
  * @swagger
- * /API/v1/transaction:
+ * /API/v1/transactions:
  *   post:
  *     tags:
  *       - transaction
- *     summary: Create a user
+ *     summary: Add new transaction
  *     requestBody:
  *       content:
  *         application/json:
@@ -22,36 +22,38 @@ const { CheckTransaction } = require('../middleware/middleware')
  *                 type: integer
  *               amount:
  *                 type: integer
+ *               type_transaction:
+ *                 type: string
  *     responses:
  *       '200':
  *         description: Success
  *       '500':
  *         description: Internal server error
  */
-router.post('/', CheckTransaction, Insert)
+router.post('/', CheckTransaction, AddTransaction)
 
 /**
  * @swagger
- * /API/v1/transaction:
+ * /API/v1/transactions:
  *   get:
  *     tags : 
  *      - transaction
- *     summary: Example to get history transaction
+ *     summary: Example to fetch all history transactions
  *     responses:
  *       200:
  *         description: success
  *       500:
  *         description: internal server error
  */
-router.get('/', GetAll)
+router.get('/', FetchAllHistoryTransaction)
 
 /**
  * @swagger
- * /API/v1/transaction/{id}:
+ * /API/v1/transactions/{id}:
  *   get:
  *     tags : 
  *      - transaction
- *     summary: Example to get all history transaction by id
+ *     summary: Example to fetch all history transactions by source account id
  *     parameters:
  *       - in: path
  *         name: id
@@ -65,6 +67,6 @@ router.get('/', GetAll)
  *       500:
  *         description: internal server error
  */
-router.get('/:id', GetById)
+router.get('/:id', FetchHistoryTransactionById)
 
 module.exports = router

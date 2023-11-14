@@ -13,13 +13,8 @@ function CheckUser(req, res, next) {
 
     const { error } = schema.validate(req.body)
     if (error) {
-        let respons = ResponseFormatter(
-            null,
-            'invalid request',
-            error.details[0].message,
-            400)
-        res.status(400)
-        res.json(respons)
+        let response = ResponseFormatter(null, 'invalid request', error.details[0].message, 400)
+        res.status(400).json(response)
         return
     }
 
@@ -35,13 +30,8 @@ function CheckAccount(req, res, next) {
 
     const { error } = schema.validate(req.body)
     if (error) {
-        let respons = ResponseFormatter(
-            null,
-            'invalid request',
-            error.details[0].message,
-            400)
-        res.status(400)
-        res.json(respons)
+        let response = ResponseFormatter(null, 'invalid request', error.details[0].message, 400)
+        res.status(400).json(response)
         return
     }
     next()
@@ -50,19 +40,15 @@ function CheckAccount(req, res, next) {
 function CheckTransaction(req, res, next) {
     const schema = Joi.object({
         source_account_id: Joi.number().integer().positive().required(),
-        destination_account_id:  Joi.number().integer().positive().required(),
-        amount: Joi.number().integer().positive().required()
+        destination_account_id: Joi.number().integer().positive().required(),
+        amount: Joi.number().integer().positive().required(),
+        type_transaction: Joi.string().valid('Deposit', 'Withdraw', 'Transfer').required(),
     })
 
     const { error } = schema.validate(req.body)
     if (error) {
-        let respons = ResponseFormatter(
-            null,
-            'invalid request',
-            error.details[0].message,
-            400)
-        res.status(400)
-        res.json(respons)
+        let response = ResponseFormatter(null, 'invalid request', error.details[0].message, 400)
+        res.status(400).json(response)
         return
     }
     next()

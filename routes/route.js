@@ -8,9 +8,9 @@ const authRoute = require('../routes/auth.route')
 
 router.use(morgan('dev'))
 
-router.use('/user', userRoute)
-router.use('/account', accountRoute)
-router.use('/transaction', transactionRoute)
+router.use('/users', userRoute)
+router.use('/accounts', accountRoute)
+router.use('/transactions', transactionRoute)
 router.use('/auth', authRoute)
 
 module.exports = router

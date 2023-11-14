@@ -1,18 +1,20 @@
 const { ResponseFormatter, Pagination } = require('../helper/resp.helper')
+const { HashPassword } = require('../helper/pass.helper')
 const { PrismaClient } = require('@prisma/client')
 
 const prisma = new PrismaClient()
 
-async function Insert(req, res) {
+async function CreateUser(req, res) {
 
     const { name, password, email, identity_type, identity_number, address } = req.body
+    const hashPass = await HashPassword(password)
 
     try {
         const user = await prisma.user.create({
             data: {
                 name,
                 email,
-                password,
+                password: hashPass,
                 profile: {
                     create: {
                         identity_type,
@@ -20,21 +22,19 @@ async function Insert(req, res) {
                         address
                     }
                 }
-
             }
         })
-        let respons = ResponseFormatter(user, 'created user success', null, 200)
-        res.status(200).json(respons)
+        let response = ResponseFormatter(user, 'created user success', null, 200)
+        res.status(200).json(response)
         return
-
     } catch (error) {
-        let respons = ResponseFormatter(null, 'internal server error', error, 500)
-        res.status(500).json(respons)
+        let response = ResponseFormatter(null, 'internal server error', error, 500)
+        res.status(500).json(response)
         return
     }
 }
 
-async function GetById(req, res) {
+async function FetchUser(req, res) {
 
     const { id } = req.params
 
@@ -46,8 +46,8 @@ async function GetById(req, res) {
         })
 
         if (!checkUser) {
-            let respons = ResponseFormatter(null, 'id user not found', null, 404)
-            res.status(404).json(respons)
+            let response = ResponseFormatter(null, 'id user not found', null, 404)
+            res.status(404).json(response)
             return
         } else {
             const users = await prisma.user.findUnique({
@@ -69,19 +69,19 @@ async function GetById(req, res) {
                     id: parseInt(id)
                 },
             })
-            let respons = ResponseFormatter(users, 'fetch user detail success', null, 200)
-            res.status(200).json(respons)
+            let response = ResponseFormatter(users, 'fetch user detail success', null, 200)
+            res.status(200).json(response)
             return
         }
     } catch (error) {
-        let respons = ResponseFormatter(null, 'internal server error', error, 500)
-        res.status(500).json(respons)
+        let response = ResponseFormatter(null, 'internal server error', error, 500)
+        res.status(500).json(response)
         return
     }
 }
 
 
-async function GetAll(req, res) {
+async function FetchAllUser(req, res) {
 
     const { name, password, email, page, perPage } = req.query
 
@@ -120,19 +120,18 @@ async function GetAll(req, res) {
         const totalPages = Math.ceil(totalCount / itemsPerPage)
 
         let pagination = Pagination(currentPage, totalCount, totalPages)
-        let respons = ResponseFormatter(users, 'fetch all user success', null, 200)
-
-        res.status(200).json({ data: respons, pagination })
+        let response = ResponseFormatter(users, 'fetch all user success', null, 200)
+        res.status(200).json({ data: response, pagination })
         return
     } catch (error) {
         console.log(error)
-        let respons = ResponseFormatter(null, 'internal server error', error, 500)
-        res.status(500).json(respons)
+        let response = ResponseFormatter(null, 'internal server error', error, 500)
+        res.status(500).json(response)
         return
     }
 }
 
-async function Delete(req, res) {
+async function DeleteUser(req, res) {
 
     const { id } = req.params
 
@@ -141,7 +140,7 @@ async function Delete(req, res) {
         const user_id = parseInt(id)
 
         if (isNaN(user_id) || user_id <= 0) {
-            const response = ResponseFormatter(null, 'Bad request: Invalid ID', null, 400);
+            const response = ResponseFormatter(null, 'bad request : invalid id', null, 400)
             res.status(400).json(response)
             return
         }
@@ -153,7 +152,7 @@ async function Delete(req, res) {
         })
 
         if (!userExists) {
-            const response = ResponseFormatter(null, 'Bad request: User not found', null, 400);
+            const response = ResponseFormatter(null, 'Bad request: User not found', null, 400)
             res.status(400).json(response)
             return
         }
@@ -193,18 +192,18 @@ async function Delete(req, res) {
             }
         })
 
-        const response = ResponseFormatter(null, 'User and related data deleted successfully', null, 200);
+        const response = ResponseFormatter(null, 'user and related data deleted successfully', null, 200)
         res.status(200).json(response)
         return
     } catch (error) {
-        const response = ResponseFormatter(null, 'Internal server error', error, 500);
+        const response = ResponseFormatter(null, 'internal server error', error, 500)
         res.status(500).json(response)
         return
     }
 }
 
 
-async function Update(req, res) {
+async function UpdateUser(req, res) {
 
     const { name, password, email } = req.body
     const { id } = req.params
@@ -214,8 +213,8 @@ async function Update(req, res) {
 
 
     if (!name && !password && !email && !identity_type && !identity_number && !address) {
-        let respons = ResponseFormatter(null, 'bad request', null, 400)
-        res.status(400).json(respons)
+        let response = ResponseFormatter(null, 'bad request', null, 400)
+        res.status(400).json(response)
         return
     }
 
@@ -258,8 +257,8 @@ async function Update(req, res) {
             }
         })
 
-        let respons = ResponseFormatter(user, 'update user success', null, 200)
-        res.status(200).json(respons)
+        let response = ResponseFormatter(user, 'update user success', null, 200)
+        res.status(200).json(response)
         return
     } catch (error) {
         let respons = ResponseFormatter(null, 'internal server error', error, 500)
@@ -269,9 +268,9 @@ async function Update(req, res) {
 }
 
 module.exports = {
-    Insert,
-    GetById,
-    Delete,
-    Update,
-    GetAll
+    CreateUser,
+    FetchUser,
+    DeleteUser,
+    UpdateUser,
+    FetchAllUser
 }

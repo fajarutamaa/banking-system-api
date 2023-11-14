@@ -1,11 +1,11 @@
-const express = require('express');
-const router = express.Router();
-const { Insert, GetAll, GetById } = require('../controller/account.controller');
-const { CheckAccount } = require('../middleware/middleware');
+const express = require('express')
+const router = express.Router()
+const { CreateAccount, FetchAccount,FetchAllAccount } = require('../controller/account.controller')
+const { CheckAccount } = require('../middleware/middleware')
 
 /**
  * @swagger
- * /API/v1/account:
+ * /API/v1/accounts:
  *   post:
  *     tags:
  *       - account
@@ -28,11 +28,11 @@ const { CheckAccount } = require('../middleware/middleware');
  *       '500':
  *         description: Internal server error
  */
-router.post('/', CheckAccount, Insert);
+router.post('/', CheckAccount, CreateAccount)
 
 /**
  * @swagger
- * /API/v1/account:
+ * /API/v1/accounts:
  *   get:
  *     tags:
  *      - account
@@ -43,11 +43,11 @@ router.post('/', CheckAccount, Insert);
  *       '500':
  *         description: Internal server error
  */
-router.get('/', GetAll);
+router.get('/', FetchAllAccount)
 
 /**
  * @swagger
- * /API/v1/account/{id}:
+ * /API/v1/accounts/{id}:
  *   get:
  *     tags:
  *      - account
@@ -65,6 +65,6 @@ router.get('/', GetAll);
  *       '500':
  *         description: Internal server error
  */
-router.get('/:id', GetById);
+router.get('/:id', FetchAccount)
 
-module.exports = router;
+module.exports = router

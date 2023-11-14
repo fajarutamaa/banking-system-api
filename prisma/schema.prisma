@@ -38,7 +38,7 @@ model BankAccount {
   id                       Int           @id @default(autoincrement())
   user_id                  Int           @unique
   bank_name                String
-  bank_account_number      Int
+  bank_account_number      Int           @unique
   balance                  Int           @default(0)
   createdAt                DateTime      @default(now())
   updatedAt                DateTime      @updatedAt
@@ -50,12 +50,11 @@ model BankAccount {
 
 model Transaction {
   id                     Int         @id @default(autoincrement())
-  source_account_id      Int         
-  destination_account_id Int         
+  source_account_id      Int
+  destination_account_id Int
+  type_transaction       String      
   amount                 Int
   createdAt              DateTime    @default(now())
-  updatedAt              DateTime    @updatedAt
-  deletedAt              DateTime?
   sourceAccount          BankAccount @relation("sourceAccount", fields: [source_account_id], references: [user_id])
   destinationAccount     BankAccount @relation("destinationAccount", fields: [destination_account_id], references: [user_id])
 }
